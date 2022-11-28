@@ -31,7 +31,7 @@ public class SpendReport {
     public static Table report(Table transactions) {
         return transactions.select(
                         $("account_id"),
-                        $("transaction_time").floor(TimeIntervalUnit.HOUR).as("log_ts"),
+                        call(MyFloor.class, $("transaction_time")).as("log_ts"),
                         $("amount"))
                 .groupBy($("account_id"), $("log_ts"))
                 .select(
