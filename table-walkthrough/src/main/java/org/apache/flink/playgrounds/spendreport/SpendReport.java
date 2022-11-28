@@ -29,14 +29,12 @@ import static org.apache.flink.table.api.Expressions.*;
 public class SpendReport {
 
     public static Table report(Table transactions) {
-        return transactions.select(
-                        $("account_id"),
-                        call(MyFloor.class, $("transaction_time")).as("log_ts"),
-                        $("amount"))
+        return transactions
+                .window(Tumble.over(lit(1).hour()).on($("transaction_time")).as("log_ts"))
                 .groupBy($("account_id"), $("log_ts"))
                 .select(
                         $("account_id"),
-                        $("log_ts"),
+                        $("log_ts").start().as("log_ts"),
                         $("amount").sum().as("amount"));
     }
 
